@@ -1,2 +1,2 @@
 # game-loop
-SDL Game Loop in C
+A simple game loop in C and SDL
