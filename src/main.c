@@ -8,6 +8,13 @@ bool is_game_running = false;
 SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
 
+struct object {
+    float x;
+    float y;
+    float width;
+    float height;
+} ball;
+
 bool initialize_window(void) {
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
         fprintf(stderr, "Error initializing SDL.\n");
@@ -20,7 +27,7 @@ bool initialize_window(void) {
             SDL_WINDOWPOS_CENTERED,
             WINDOW_WIDTH,
             WINDOW_HEIGHT,
-            SDL_WINDOW_BORDERLESS
+            SDL_WINDOW_METAL
             );
 
     // Don't proceed if window can not be created
@@ -40,6 +47,13 @@ bool initialize_window(void) {
     return true;
 }
 
+void setup() {
+    ball.x = 20;
+    ball.y = 20;
+    ball.width = 15;
+    ball.height = 15;
+}
+
 void process_input() {
 	SDL_Event event;
 	SDL_PollEvent(&event);
@@ -49,18 +63,32 @@ void process_input() {
 		    is_game_running = false;
 		    break;
 		case SDL_KEYDOWN:
-		    if (event.key.keysym.sym == SDLK_ESCAPE)
+		    if ((event.key.keysym.sym == SDLK_ESCAPE) || (event.key.keysym.sym == SDLK_q))
 		    	is_game_running = false;
 		    break;
 	}
 }
 
 void update() {
-
+    ball.x += 1;
+    ball.y += 1;
 }
 
 void render() {
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_RenderClear(renderer);
 
+    // Draw a rectangle
+    SDL_Rect ball_rect = {
+        ball.x, ball.y, ball.width, ball.height
+    };
+
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_RenderFillRect(renderer, &ball_rect);
+
+
+    // Render the rntire scene
+    SDL_RenderPresent(renderer);
 }
 
 void destroy_window() {
@@ -71,6 +99,7 @@ void destroy_window() {
 
 int main(int argc, char *argv[]) {
     is_game_running = initialize_window();
+    setup();
 
 
     /* Game loop is similar to REPL */
